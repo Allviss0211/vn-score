@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:tflite/tflite.dart';
+import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:vn_score/providers/sheetnumber_provider.dart';
@@ -167,19 +169,24 @@ class _RightBarState extends State<RightBar> {
                   widget.screenshotController
                       .capture(delay: const Duration(milliseconds: 10))
                       .then((Uint8List image) async {
-                    if (image != null) {
-                      var fileName =
-                          DateTime.now().microsecondsSinceEpoch.toString();
-                      var res = await ImageGallerySaver.saveImage(image,
-                          name: fileName);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(res['isSuccess']
-                              ? 'Lưu thành công'
-                              : 'Lưu thất bại'),
-                        ),
-                      );
-                    }
+                    // image = image.reshape([256, 256, 1]);
+                    print(image.shape);
+                    final interpreter = await Tflite.loadModel(
+                        model: 'assets/models/text_detector.tflite');
+                    print(interpreter);
+                    final res = await Tflite.runModelOnBinary(binary: image);
+                    print(res);
+
+                    // if (image != null) {
+                    //   var fileName =
+                    //       DateTime.now().microsecondsSinceEpoch.toString();
+                    //   var res = await ImageGallerySaver.saveImage(image,
+                    //       name: fileName);
+                    //   Fluttertoast.showToast(
+                    //       msg: res['isSuccess']
+                    //           ? 'Lưu thành công'
+                    //           : 'Lưu thất bại');
+                    // }
                   });
                 },
               )

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class BgColorProvider extends ChangeNotifier {
   Color _bgColor = Colors.white;
